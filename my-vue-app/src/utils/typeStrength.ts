@@ -1,4 +1,4 @@
-// utils/typeWeakness.ts
+// Type effectiveness table (attacking multipliers)
 const typeChart: Record<string, Record<string, number>> = {
     normal: { rock: 0.5, ghost: 0, steel: 0.5 },
     fire: { fire: 0.5, water: 0.5, grass: 2, ice: 2, bug: 2, rock: 0.5, dragon: 0.5, steel: 2 },
@@ -20,22 +20,24 @@ const typeChart: Record<string, Record<string, number>> = {
     fairy: { fighting: 2, dragon: 2, dark: 2, fire: 0.5, poison: 0.5, steel: 0.5 },
 };
 
-export function getWeaknesses(types: string[]) {
+// Returns an array of types this Pokémon is strong against with multiplier
+export function getStrongAgainst(types: string[]) {
     const allTypes = Object.keys(typeChart);
-    const weak: Record<string, number> = {};
+    const strong: Record<string, number> = {};
 
     allTypes.forEach((defType) => {
         let multiplier = 1;
         types.forEach((atkType) => {
-            const chart = typeChart[defType]; // **use defender chart for weaknesses**
-            if (chart && chart[atkType] !== undefined) {
-                multiplier *= chart[atkType];
+            const chart = typeChart[atkType];
+            if (chart && chart[defType] !== undefined) {
+                multiplier *= chart[defType];
             }
         });
-        if (multiplier > 1) weak[defType] = multiplier;
+        if (multiplier > 1) strong[defType] = multiplier;
     });
 
-    return Object.entries(weak)
+    // Sort descending by multiplier
+    return Object.entries(strong)
         .sort((a, b) => b[1] - a[1])
-        .map(([type, multiplier]) => ({ type, multiplier }));
+        .map(([type, mult]) => ({ type, multiplier: mult }));
 }

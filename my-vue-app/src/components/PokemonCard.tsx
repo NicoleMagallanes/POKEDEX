@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { fetchEvolutions } from "../services/pokemonEvolution";
 import { getPokemonSpriteUrl } from "../services/evolutionSprites";
+import { getStrongAgainst } from "../utils/typeStrength";
+import { getWeaknesses } from "../utils/typeWeakness";
 // import { fetchPokemonCategory } from "../services/pokemonCategory";
 
 interface PokemonCardProps {
@@ -11,6 +13,7 @@ interface PokemonCardProps {
 export default function PokemonCard({ pokemon, onSearch }: PokemonCardProps) {
   const types = pokemon.types.map((t: any) => t.type.name);
   const weaknesses = getWeaknesses(types);
+const strongAgainst = getStrongAgainst(types);
 // const [category, setCategory] = useState<string>("");
   const [evolutions, setEvolutions] = useState<string[]>([]);
 
@@ -86,24 +89,43 @@ export default function PokemonCard({ pokemon, onSearch }: PokemonCardProps) {
           </div>
         </div>
 
-        {/* Weaknesses */}
-        <div className="mb-4">
-          <h3 className="font-semibold text-lg text-gray-700 mb-2 text-center md:text-left">Weaknesses</h3>
-          <div className="flex gap-2 flex-wrap justify-center md:justify-start">
-            {weaknesses.length > 0 ? (
-              weaknesses.map((w) => (
-                <span
-                  key={w}
-                  className="px-3 py-1 rounded-full bg-red-500 text-white text-sm capitalize shadow-md font-semibold transition-all duration-300 hover:scale-105"
-                >
-                  {w}
-                </span>
-              ))
-            ) : (
-              <p className="text-sm text-gray-500">No major weaknesses</p>
-            )}
-          </div>
-        </div>
+       {/* Weaknesses */}
+<div className="mb-4">
+  <h3 className="font-semibold text-lg text-gray-700 mb-2 text-center md:text-left">Weaknesses</h3>
+  <div className="flex gap-2 flex-wrap justify-center md:justify-start">
+    {weaknesses.length > 0 ? (
+      weaknesses.map(({ type, multiplier}) => (
+        <span
+          key={type}
+          className="px-3 py-1 rounded-full bg-red-500 text-white text-sm capitalize shadow-md font-semibold transition-all duration-300 hover:scale-105"
+        >
+          {type} x{multiplier}
+        </span>
+      ))
+    ) : (
+      <p className="text-sm text-gray-500">No major weaknesses</p>
+    )}
+  </div>
+</div>
+{/* Strong Against */}
+<div className="mb-4">
+  <h3 className="font-semibold text-lg text-gray-700 mb-2 text-center md:text-left">Strong Against</h3>
+  <div className="flex gap-2 flex-wrap justify-center md:justify-start">
+    {strongAgainst.length > 0 ? (
+      strongAgainst.map(({ type, multiplier }) => (
+        <span
+          key={type}
+          className="px-3 py-1 rounded-full bg-green-500 text-white text-sm capitalize shadow-md font-semibold transition-all duration-300 hover:scale-105"
+        >
+          {type} x{multiplier}
+        </span>
+      ))
+    ) : (
+      <p className="text-sm text-gray-500">No major strengths</p>
+    )}
+  </div>
+</div>
+
 
         {/* Base Stats */}
         <div className="mb-4">
@@ -215,17 +237,3 @@ function getTypeColor(type: string): string {
   return colors[type] || "#A8A878";
 }
 
-// Weaknesses (simplified)
-function getWeaknesses(types: string[]) {
-  const weaknessMap: Record<string, string[]> = {
-    fire: ["water", "rock", "ground"],
-    water: ["electric", "grass"],
-    grass: ["fire", "ice", "poison", "flying", "bug"],
-    electric: ["ground"],
-  };
-  const weak: string[] = [];
-  types.forEach((t) => {
-    if (weaknessMap[t]) weak.push(...weaknessMap[t]);
-  });
-  return Array.from(new Set(weak));
-}
