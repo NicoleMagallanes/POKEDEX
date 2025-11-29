@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { fetchEvolutions } from "../services/pokemonEvolution";
 import { getPokemonSpriteUrl } from "../services/evolutionSprites";
-import { fetchPokemonCategory } from "../services/pokemonCategory";
+// import { fetchPokemonCategory } from "../services/pokemonCategory";
 
 interface PokemonCardProps {
   pokemon: any;
@@ -11,16 +11,16 @@ interface PokemonCardProps {
 export default function PokemonCard({ pokemon, onSearch }: PokemonCardProps) {
   const types = pokemon.types.map((t: any) => t.type.name);
   const weaknesses = getWeaknesses(types);
-const [category, setCategory] = useState<string>("");
+// const [category, setCategory] = useState<string>("");
   const [evolutions, setEvolutions] = useState<string[]>([]);
 
   // Fetch evolution chain using the helper
   useEffect(() => {
-    const loadCategory = async () => {
-    const cat = await fetchPokemonCategory(pokemon.name);
-    setCategory(cat);
-  };
-  loadCategory();
+//     const loadCategory = async () => {
+//     const cat = await fetchPokemonCategory(pokemon.name);
+//     setCategory(cat);
+//   };
+//   loadCategory();
     const loadEvolutions = async () => {
       const evoList = await fetchEvolutions(pokemon.name);
       setEvolutions(evoList);
